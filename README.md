@@ -18,29 +18,29 @@
 
 ---
 
-## Features
+### Features
 - Multi-window support
 
 ---
 
-## Notes
+### Notes
 To enable `sudo` / privilege escalation:
 - Add the service account to `sudoers` - instructions are available inside the app (click the `?`)
 
 ---
-## Install
+### Install ###
 1. Download the spk, then manually install via Package Center
 or
 2. Add 'https://chrisjbawden.github.io/sspr/' as a package source and download 
 
 ---
 
-## Requirements
+### Requirements 
 - Python
 
 ---
 
-## Disclaimer
+### Disclaimer
 - This project is provided “as is” without any warranty or guarantees
 - Use at your own risk, especially when enabling `sudo` or modifying system permissions
 - The author is not responsible for any damage, data loss, or misconfiguration resulting from use of this software
