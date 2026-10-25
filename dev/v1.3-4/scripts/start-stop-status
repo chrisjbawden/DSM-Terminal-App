@@ -1,0 +1,157 @@
+#!/bin/sh
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd -P)
+. "${SCRIPT_DIR}/service-setup"
+
+PKG_ROOT="${SYNOPKG_PKGDEST}"
+RUN_DIR="${SYNOPKG_PKGVAR}/run"
+PID_FILE="${RUN_DIR}/pty_service.pid"
+LOG_FILE="${RUN_DIR}/pty_service.log"
+SERVICE="${PKG_ROOT}/bin/pty_service.py"
+SOCKET_DIR="/tmp/dsm-terminal-pty"
+SOCKET_FILE="${SOCKET_DIR}/pty.sock"
+PYTHON_BIN=$(find_python3 || true)
+
+health_check() {
+    socket_file=$1
+    [ -S "${socket_file}" ] || return 1
+    "${PYTHON_BIN}" - "${socket_file}" <<'PY' >/dev/null 2>&1
+import json
+import socket
+import sys
+
+sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+sock.settimeout(1)
+sock.connect(sys.argv[1])
+sock.sendall(b'{"action":"ping"}')
+sock.shutdown(socket.SHUT_WR)
+response = json.loads(sock.recv(65536).decode("utf-8"))
+sock.close()
+if not response.get("ok"):
+    raise SystemExit(1)
+PY
+}
+
+is_running() {
+    pid_file=$1
+    socket_file=$2
+
+    if [ ! -f "${pid_file}" ]; then
+        return 1
+    fi
+
+    pid=$(cat "${pid_file}" 2>/dev/null || true)
+    case "${pid}" in
+        ''|*[!0-9]*)
+            return 1
+            ;;
+    esac
+
+    if ! kill -0 "${pid}" 2>/dev/null; then
+        return 1
+    fi
+
+    health_check "${socket_file}"
+}
+
+cleanup_stale_runtime() {
+    pid_file=$1
+    socket_file=$2
+
+    if is_running "${pid_file}" "${socket_file}"; then
+        return 0
+    fi
+    rm -f "${pid_file}" "${socket_file}"
+}
+
+start_python_service() {
+    service_path=$1
+    socket_file=$2
+    pid_file=$3
+    log_file=$4
+    extra_args=$5
+
+    if [ ! -f "${service_path}" ]; then
+        echo "Service script not found: ${service_path}" >> "${log_file}"
+        return 1
+    fi
+
+    printf '%s\n' "Starting service with ${service_path}" >> "${log_file}"
+    start_cmd="
+        HOME='${SYNOPKG_PKGVAR}/home' \
+        PYTHONUNBUFFERED=1 \
+        exec '${PYTHON_BIN}' '${service_path}' \
+            --socket '${socket_file}' \
+            --pidfile '${pid_file}' \
+            ${extra_args} \
+            >>'${log_file}' 2>&1
+    "
+
+    if command -v setsid >/dev/null 2>&1; then
+        setsid sh -c "${start_cmd}" </dev/null >/dev/null 2>&1 &
+    else
+        nohup sh -c "${start_cmd}" </dev/null >/dev/null 2>&1 &
+    fi
+
+    timeout=30
+    while [ ${timeout} -gt 0 ]; do
+        if is_running "${pid_file}" "${socket_file}"; then
+            return 0
+        fi
+        sleep 1
+        timeout=$((timeout - 1))
+    done
+
+    printf '%s\n' "Service failed health check during startup: ${service_path}" >> "${log_file}"
+    return 1
+}
+
+start_service() {
+    mkdir -p "${RUN_DIR}" "${SYNOPKG_PKGVAR}/home" "${SOCKET_DIR}"
+    chmod 777 "${SOCKET_DIR}" 2>/dev/null || true
+    cleanup_stale_runtime "${PID_FILE}" "${SOCKET_FILE}"
+    if is_running "${PID_FILE}" "${SOCKET_FILE}"; then
+        return 0
+    fi
+
+    PYTHON_BIN=$(find_python3 || true)
+    if [ -z "${PYTHON_BIN}" ]; then
+        echo "No compatible Python 3 runtime with the pty module found" >> "${LOG_FILE}"
+        return 1
+    fi
+
+    rm -f "${SOCKET_FILE}" "${PID_FILE}"
+    start_python_service "${SERVICE}" "${SOCKET_FILE}" "${PID_FILE}" "${LOG_FILE}" "--home '${SYNOPKG_PKGVAR}/home'" || return 1
+    return 0
+}
+
+stop_service() {
+    if [ -f "${PID_FILE}" ]; then
+        kill "$(cat "${PID_FILE}")" 2>/dev/null || true
+    fi
+    rm -f "${PID_FILE}" "${SOCKET_FILE}"
+}
+
+case $1 in
+    start)
+        start_service
+        exit $?
+        ;;
+    stop)
+        stop_service
+        exit 0
+        ;;
+    status)
+        if is_running "${PID_FILE}" "${SOCKET_FILE}"; then
+            exit 0
+        fi
+        exit 1
+        ;;
+    log)
+        [ -f "${LOG_FILE}" ] && cat "${LOG_FILE}"
+        exit 0
+        ;;
+    *)
+        exit 1
+        ;;
+esac

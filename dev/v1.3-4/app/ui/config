@@ -1,0 +1,35 @@
+{"DSMTerminalApp.js": {
+  "SYNO.SDS.App.DSMTerminal.Instance": {
+      "type": "app",
+      "icon": "images/app_{0}.png",
+      "title": "DSM Terminal",
+      "desc": "A proof-of-concept shell window inside DSM",
+      "appWindow": "SYNO.SDS.App.DSMTerminal",
+      "allUsers": true,
+      "allowMultiInstance": true,
+      "maxInstance": 3,
+      "allowSharing": true,
+      "allowStandalone": true,
+      "grantPrivilege": "all",
+      "texts": "texts",
+      "helpSection": "DSMTerminal",
+      "hidden": false,
+      "depend": [
+        "SYNO.SDS.App.DSMTerminal"
+      ]
+  },
+  "SYNO.SDS.App.DSMTerminal": {
+    "type": "lib",
+    "title": "DSM Terminal",
+    "icon": "images/app_{0}.png",
+    "depend": []
+  },
+  "SYNO.SDS.App.DSMTerminal.Window": {
+    "type": "lib",
+    "depend": [
+      "SYNO.SDS.App.DSMTerminal"
+    ],
+    "icon": "images/app_{0}.png",
+    "title": "DSM Terminal"
+  }
+}}
