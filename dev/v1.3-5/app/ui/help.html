@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DSM Terminal Help</title>
+  <link rel="stylesheet" href="app.css?v=0.1.3-5-ui2">
+</head>
+<body class="help-page">
+  <main class="help-shell">
+    <section class="help-section compact-section">
+      <div class="font-setting">
+        <label class="helper-label" for="fontFamilySelect">Terminal font</label>
+        <select id="fontFamilySelect" class="font-select"></select>
+      </div>
+      <hr class="settings-divider">
+      <div class="status-row">
+        <span class="helper-label">Passwordless sudo</span>
+        <span id="sudoStatusBadge" class="sudo-badge">Unknown</span>
+      </div>
+      <p id="helpStatus" class="helper-note"></p>
+      <p id="sudoWarning" class="warning">
+        If you want <code>sudo -i</code> to work without a password, enable passwordless sudo for <code>sc-dsm-terminal</code> over SSH as <code>root</code>.
+      </p>
+      <div id="enableSudoBlock" class="helper-block" hidden>
+        <div class="command-row">
+          <code id="enableSudoCommand">/var/packages/dsm-terminal/scripts/enable_passwordless_sudo.sh</code>
+          <button class="icon-button copy-button" type="button" data-copy-target="enableSudoCommand" aria-label="Copy enable command">⧉</button>
+        </div>
+      </div>
+      <div id="disableSudoBlock" class="helper-block" hidden>
+        <div class="command-row">
+          <code id="disableSudoCommand">/var/packages/dsm-terminal/scripts/disable_passwordless_sudo.sh</code>
+          <button class="icon-button copy-button" type="button" data-copy-target="disableSudoCommand" aria-label="Copy disable command">⧉</button>
+        </div>
+      </div>
+      <hr class="settings-divider">
+      <div class="logs-header">
+        <span class="helper-label">Logs</span>
+        <a class="secondary-button" href="logs.cgi?action=download" download="terminal.log">Download</a>
+      </div>
+      <pre id="logPreview" class="log-preview">Loading recent log lines...</pre>
+    </section>
+    <p class="helper-meta helper-meta-centered">
+      <a href="https://github.com/chrisjbawden/DSM-Terminal" target="_blank" rel="noopener noreferrer">Version 0.1.3-5</a>
+    </p>
+  </main>
+
+  <script src="help.js?v=0.1.3-5-ui2"></script>
+</body>
+</html>

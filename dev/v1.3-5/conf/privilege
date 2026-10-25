@@ -1,0 +1,7 @@
+{
+  "defaults": {
+    "run-as": "package"
+  },
+  "username": "sc-dsm-terminal",
+  "groupname": "sc-dsm-terminal"
+}

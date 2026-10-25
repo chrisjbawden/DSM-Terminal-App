@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DSM Terminal</title>
+  <link rel="stylesheet" href="vendor/xterm.css?v=0.1.3-5">
+  <link rel="stylesheet" href="app.css?v=0.1.3-5">
+  <link rel="preload" href="vendor/fonts/CascadiaCodeNF.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="vendor/fonts/FiraCode-VF.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="vendor/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="vendor/fonts/SourceCodePro-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="vendor/fonts/IBMPlexMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body>
+  <main class="terminal-shell">
+    <div id="topbar" class="topbar">
+      <div id="status" class="status">Connecting...</div>
+    </div>
+    <div id="terminalMount" class="terminal-mount" aria-label="Terminal output"></div>
+  </main>
+
+  <script src="vendor/xterm.js?v=0.1.3-5"></script>
+  <script src="app.js?v=0.1.3-5"></script>
+</body>
+</html>
