@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/chrisjbawden/DSM-Terminal-App/raw/refs/heads/main/dsm-terminal-0.1.2.spk">
+  <a href="https://github.com/chrisjbawden/DSM-Terminal-App/raw/refs/heads/main/dsm-terminal-0.1.3-5.spk">
     <img src="https://img.shields.io/badge/Download-SPK-blue?style=for-the-badge&logo=synology" alt="Download DSM Terminal App">
   </a>
 </p>
