@@ -28,6 +28,12 @@ To enable `sudo` / privilege escalation:
 - Add the service account to `sudoers` - instructions are available inside the app (click the `?`)
 
 ---
+## Install
+1. Download the spk, then manually install via Package Center
+or
+2. Add 'https://chrisjbawden.github.io/sspr/' as a package source and download 
+
+---
 
 ## Requirements
 - Python
